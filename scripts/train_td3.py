@@ -73,7 +73,7 @@ def train():
 
     run_name = (
         f"fmt"
-        f"_run_id{wandb.run.id}_"
+        f"_run_id_{wandb.run.id}_"
         # f"_dem{cfg.map_id_set}_"
         f"_seed{cfg.master_seed}"
         f"_env{cfg.n_envs}"
@@ -111,7 +111,7 @@ def train():
             param.RISK_PENALTY = float(env_cfg["risk_penalty"])
             param.NOPATH_PENALTY = float(env_cfg["nopath_penalty"])
             
-            param.map_id_set = eval(env_cfg["map_id_set"])
+            param.map_id_set = env_cfg["map_id_set"]
             # env.unwrapped.EXPLORE_GAIN_WEIGHT = float(env_cfg["explore_gain_w"])
 
             env = gym.make("DM-v1", exec_mode = EXEC_MODE, obs_mode = OBS_MODE, map_id_set=env_cfg["map_id_set"], rank = rank)

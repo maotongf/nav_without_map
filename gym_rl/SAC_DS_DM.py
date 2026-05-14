@@ -22,7 +22,7 @@ from gymnasium import spaces
 from gymnasium.utils import seeding
 
 class DM_env(gym.Env):
-    def __init__(self, exec_mode = "common", obs_mode = "full", map_id_set: list[str] | None = None, rank = 0):
+    def __init__(self, exec_mode = "common", obs_mode = "full", map_id_set = None, rank = 0):
         super(DM_env, self).__init__()
 
         # self.dem_id = param.dem_id
@@ -618,7 +618,7 @@ class DM_env(gym.Env):
         '''
         dem_id = dem_id
 
-        DATASET_DIR = os.path.join(PARENT_DIR, "Dataset", "output", "map", "tiles" )
+        DATASET_DIR = os.path.join(PARENT_DIR, "Dataset", "output", "map", "hard_obstacle" )
         npy_path = os.path.join(DATASET_DIR, f"tile_{dem_id}.npy")
 
         if not os.path.exists(npy_path):
@@ -699,9 +699,10 @@ class DM_env(gym.Env):
         '''
         获取 top k frontier clusters
         '''
+        local_goal_iy, local_goal_ix = self.Transform_World_global_to_local(self.goal_ix, self.goal_iy, "index")
         frontier = Frontier(self.local_m_occ, self.local_m_unk, 
                             self.local_m_free,(param.local_size_height // 2, param.local_size_width // 2)
-                            , weight, (self.goal_ix, self.goal_iy), k=param.frontier_k)
+                            , weight, (local_goal_ix, local_goal_iy), k=param.frontier_k)
         frontier_mask = frontier.compute_frontier_mask()
         clusters = frontier.cluster_frontiers(frontier_mask)
         new_clusters = frontier.splite_large_clusters(clusters)

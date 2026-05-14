@@ -1,0 +1,94 @@
+entity: 3297240254-bit
+project: fmt-without_prior_map-dm
+name: DM_sweep_0207
+program: scripts/train_sac.py
+
+# early_terminate:
+#   type: hyperband
+#   min_iter: 3
+#   eta: 3
+#   s: 2
+# 有点搞不懂
+
+early_terminate:
+  type: hyperband
+  max_iter: 27
+  s: 2
+  eta: 3
+
+command:
+  - ${env}
+  - python3
+  - ${program}
+
+method: random                # grid, bayes
+metric:
+  name: custom/success_rate   # rollout/ep_rew_mean
+  goal: maximize
+
+parameters:
+  master_seed:
+    values: [0, 1, 2]
+  exec_mode:
+    values: ["common"]        # "common", "noplan"
+  obs_mode:
+    values: ["full"]          # "full", "no_uncertainty"
+
+  # map setting
+  map_id_set:
+    values: [["00000", "10001", "10002","10003", "10004", "10005","10006", "10007", "10008", "10010", "10011", "10012",
+           "10013", "10014", "10016","10017", "10019", "10020","10022", "10023", "10026", "10028", "10030", "10031", 
+           "10032", "10033", "10037","10038", "10039", "10040", "10042"]] 
+
+    # train: ["00000", "10001", "10002","10003", "10004", "10005","10006", "10007", "10008", "10010", "10011", "10012",
+    #        "10013", "10014", "10016","10017", "10019", "10020","10022", "10023", "10026", "10028", "10030", "10031", 
+    #        "10032", "10033", "10037",""10038", "10039", "10040", "10042"]
+
+    # test: ["20002", "20003", "20007", "20009", "20011", "20012", "20014", "20017", "20018", "20021",
+    #         "20023", "20030", "20036", "20041", "30007", "30019", "30025", "30026", "30033", "30037",
+    #         "30043", "30048", "30051", "30058"]
+
+  # ===== 固定/训练设置 =====
+  total_timesteps:
+    value: 500000
+  n_envs:
+    values: [8]
+  features_dim:
+    values: [256]
+  learning_starts:
+    values: [2000, 5000, 10000]
+  train_freq:
+    values: [1, 4]
+  gradient_steps:
+    values: [1, 4, 8]
+
+  # ===== SAC 超参 =====
+  learning_rate:
+    distribution: log_uniform_values
+    min: 1.0e-5
+    max: 3.0e-4
+  batch_size:
+    values: [256, 512, 1024]
+  buffer_size:
+    values: [20000, 50000]
+  gamma:
+    values: [0.98, 0.99, 0.995]
+  tau:
+    values: [0.005, 0.01]
+
+  # ===== 环境 reward 权重（你要 sweep 的）=====
+  reach_w:
+    values: [10.0, 5.0]
+  collision_penalty:
+    values: [-20.0, -10.0]
+  step_penalty:
+    values: [-1.0, -2.0]
+  distance_w:
+    values: [3.0, 5.0]
+  explore_gain_w:
+    values: [0.5, 1.0, 2.0]
+  risk_penalty:
+    values: [-0.5, -0.8, -1.5]
+  nopath_penalty:
+    values: [-2.0, -3.0, -5.0]
+

@@ -1,7 +1,7 @@
 entity: 3297240254-bit
 project: fmt-without_prior_map-dm
 name: DM_sweep_0207
-program: scripts/train.py
+program: scripts/train_td3.py
 
 # early_terminate:
 #   type: hyperband
